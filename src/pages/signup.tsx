@@ -1,16 +1,54 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
+import styled from 'styled-components';
 import { z } from 'zod';
 
+import { Button } from '@/components/atoms/Button/Button';
+import { Alert } from '@/components/molecules/Alert/Alert';
+import LabeledInput from '@/components/molecules/LabeledInput/LabeledInput';
 import { AuthContext, useAuth } from '@/provider/AuthProvider';
 
+export const LoginWrapper = styled(motion.div)`
+  padding: 2rem;
+  width: 100%;
+  max-width: 28rem;
+  place-self: center;
+  border-radius: 0.5rem;
+  background-color: ${({ theme }) => theme.colors.neutral[50]};
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: relative;
+  }
+`;
+const RedLink = styled.a`
+  color: #cf2323;
+`;
 type Inputs = {
   email: string;
   password: string;
   confirmPassword: string;
+};
+
+const loginVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.2,
+    transition: {
+      ease: 'easeInOut',
+    },
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+  },
 };
 const schema = z
   .object({
@@ -45,13 +83,38 @@ function SignUp() {
   }, [user, isAuthLoading]);
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <input {...register('email')} />
-        <input {...register('password')} />
-        <input {...register('confirmPassword')} />
-        <input type='submit' />
-      </form>
-      {alert}
+      <LoginWrapper variants={loginVariants} initial='hidden' animate='visible'>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <LabeledInput
+            {...register('email')}
+            label='Email Address'
+            error={errors.email?.message}
+            aria-invalid={errors.email ? 'true' : 'false'}
+          />
+          <LabeledInput
+            {...register('password')}
+            type='password'
+            label='Password'
+            error={errors.password?.message}
+            aria-invalid={errors.password ? 'true' : 'false'}
+          />
+          <LabeledInput
+            {...register('confirmPassword')}
+            type='password'
+            label='Confirm Password'
+            error={errors.confirmPassword?.message}
+            aria-invalid={errors.confirmPassword ? 'true' : 'false'}
+          />
+          <Button type='submit' variant='primary'>
+            Register
+          </Button>
+          {alert.length ? <Alert variant='danger'>{alert}</Alert> : null}
+          <Alert variant='warning'>
+            <p>Already have an account?</p>
+            <RedLink href='/signin'>Log In</RedLink>
+          </Alert>
+        </form>
+      </LoginWrapper>
     </>
   );
 }
