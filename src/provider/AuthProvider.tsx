@@ -2,6 +2,7 @@ import type { User } from 'firebase/auth';
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInAnonymously,
   signInWithEmailAndPassword,
   signOut,
@@ -31,6 +32,7 @@ interface AuthContextInterface {
     },
     onError: Function
   ) => void;
+  resetPassword: (email: string, onError: Function) => void;
 }
 
 export const AuthContext = createContext<AuthContextInterface>(
@@ -107,10 +109,16 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         onError(message);
       });
   };
+  const resetPassword = (email: string, onError: Function) => {
+    sendPasswordResetEmail(auth, email).catch((error) => {
+      const message = handleFirebaseAuthError(error.code);
+      onError(message);
+    });
+  };
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthLoading, logIn, logOut, signUp }}
+      value={{ user, isAuthLoading, logIn, logOut, signUp, resetPassword }}
     >
       {children}
     </AuthContext.Provider>

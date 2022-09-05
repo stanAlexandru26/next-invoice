@@ -1,5 +1,5 @@
 function PasswordReset() {
-  return <div>PasswordReset</div>;
+  return <></>;
 }
 
 export default PasswordReset;
