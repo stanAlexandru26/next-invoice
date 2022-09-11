@@ -89,7 +89,7 @@ const Index = () => {
   useEffect(() => {
     const getInvoiceFunction = async () => {
       if (user?.uid) {
-        const storeInvoices: any = await getInvoices(user.email);
+        const storeInvoices: any = await getInvoices(user.uid);
         return setInvoices(storeInvoices);
       }
       return false;

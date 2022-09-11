@@ -1,10 +1,5 @@
 import { z } from 'zod';
 
-const dateSchema = z.preprocess((arg) => {
-  if (typeof arg === 'string' || arg instanceof Date) return new Date(arg);
-}, z.date());
-type DateSchema = z.infer<typeof dateSchema>;
-
 export const statusSchema = z.enum(['paid', 'pending', 'draft']);
 
 export const paymentTermsSchema = z.union([
@@ -34,14 +29,14 @@ export const itemSchema = z.object({
 });
 const InvoiceSchema = z.object({
   id: z.string(),
-  createdAt: z.string().min(6, { message: 'Please select a date and time' }),
-  createdBy: dateSchema,
-  timestamp: dateSchema.optional(),
+  createdAt: z.date(),
+  createdBy: z.string(),
   clientName: z.string().min(6, { message: 'Can not be empty' }),
   clientEmail: z.string().email({ message: 'Please enter a valid email' }),
   clientAddress: addressSchema,
   senderAddress: addressSchema,
   paymentTerms: z.number(),
+  paymentDue: z.string(),
   status: statusSchema,
   description: z.string().min(3, { message: 'Can not be empty' }),
   items: itemSchema.array().nonempty(),

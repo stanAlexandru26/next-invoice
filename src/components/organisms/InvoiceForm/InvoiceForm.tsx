@@ -1,5 +1,6 @@
 import { DevTool } from '@hookform/devtools';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { add } from 'date-fns';
 import type { User } from 'firebase/auth';
 import { nanoid } from 'nanoid';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -35,6 +36,7 @@ function InvoiceForm({ user }: InvoiceFormProps) {
     watch,
     clearErrors,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<Invoice>({
     resolver: zodResolver(InvoiceSchema),
@@ -49,6 +51,25 @@ function InvoiceForm({ user }: InvoiceFormProps) {
   });
 
   const watchItems = watch('items');
+  const watchDate = watch('createdAt');
+  const watchPaymentTerms = watch('paymentTerms');
+
+  if (watchDate && watchPaymentTerms) {
+    const date = getValues('createdAt');
+    // @ts-ignore:next-line
+    const paymentDate = add(date, { days: watchPaymentTerms });
+    const translateDate = paymentDate.toLocaleDateString('en-GB');
+    setValue('paymentDue', translateDate);
+  }
+
+  if (watchItems) {
+    const itemsArray = getValues('items');
+
+    const sum = itemsArray.reduce((accumulator, object) => {
+      return accumulator + object.total;
+    }, 0);
+    setValue('total', sum);
+  }
 
   const controlledFields = fields.map((field, index) => {
     return {
@@ -67,6 +88,14 @@ function InvoiceForm({ user }: InvoiceFormProps) {
             {...register('createdBy')}
             defaultValue={user?.uid}
           />
+          <input type='hidden' {...register('total')} defaultValue={0} />
+          <input
+            type='hidden'
+            {...register('status')}
+            defaultValue={'pending'}
+          />
+          <input type='hidden' {...register('paymentDue')} defaultValue={0} />
+
           <FromFieldset>
             <legend>Bill from</legend>
             <GridCell area='street'>
@@ -105,14 +134,14 @@ function InvoiceForm({ user }: InvoiceFormProps) {
               <LabeledInput
                 {...register('clientName')}
                 error={errors.clientName?.message}
-                label="Client's Name"
+                label='Client Name'
               />
             </GridCell>
             <GridCell area='email'>
               <LabeledInput
                 {...register('clientEmail')}
                 error={errors.clientEmail?.message}
-                label="Client's Email"
+                label='Client Email'
               />
             </GridCell>
             <GridCell area='street'>
@@ -146,7 +175,9 @@ function InvoiceForm({ user }: InvoiceFormProps) {
             </GridCell>
             <GridCell area='invoice'>
               <LabeledInput
-                {...register('createdAt')}
+                {...register('createdAt', {
+                  valueAsDate: true,
+                })}
                 error={errors.createdAt?.message}
                 label='Invoice Date'
                 type='date'
@@ -225,11 +256,12 @@ function InvoiceForm({ user }: InvoiceFormProps) {
                     <LabeledInput
                       {...register(`items.${index}.price` as const, {
                         valueAsNumber: true,
-                        onChange: (e) =>
+                        onChange: (e) => {
                           setValue(
                             `items.${index}.total`,
                             +(e.target.value * item.quantity || 0).toFixed(2)
-                          ),
+                          );
+                        },
                       })}
                       error={errors.items?.[index]?.price?.message}
                       label='Price'
@@ -282,7 +314,7 @@ function InvoiceForm({ user }: InvoiceFormProps) {
             <Button
               variant='secondary'
               onClick={() => {
-                clearErrors('items');
+                clearErrors();
               }}
             >
               save as draft
