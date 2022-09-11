@@ -184,23 +184,6 @@ function InvoiceForm({ user }: InvoiceFormProps) {
               />
             </GridCell>
 
-            {/* <GridCell area='payment'>
-              <Controller
-                defaultValue={options[0]}
-                control={control}
-                name='paymentTerms'
-                render={({ field }) => (
-                  <CustomSelect
-                    {...field}
-                    error={errors.paymentTerms?.value?.message}
-                    isSearchable={false}
-                    label='Payment Terms'
-                    placeholder=''
-                    options={options}
-                  />
-                )}
-              />
-            </GridCell> */}
             <GridCell area='payment'>
               <select
                 {...register('paymentTerms', {
