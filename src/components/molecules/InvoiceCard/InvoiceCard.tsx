@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import Link from 'next/link';
 
+import { formatNumberToUSD } from '@/helpers/formatNumberToUSD';
 import type { Invoice } from '@/types/Invoice';
 
 import {
@@ -23,7 +24,7 @@ const InvoiceCard = ({ invoice }: InvoiceCardProps) => {
         <StyledId>{invoice.id}</StyledId>
         <DateSpan>Due {format(invoice.paymentDue, 'c MMMM R')}</DateSpan>
         <ClientSpan>{invoice.clientName}</ClientSpan>
-        <AmountSpan>{invoice.total}</AmountSpan>
+        <AmountSpan>{formatNumberToUSD(invoice.total)}</AmountSpan>
         <StyledBadge variant={invoice.status} />
       </Wrapper>
     </Link>
