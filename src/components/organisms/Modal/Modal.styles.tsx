@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import styled from 'styled-components';
 
-export const SyledDialogPanel = styled(Dialog.Overlay)`
+export const StyledDialogPanel = styled(Dialog.Overlay)`
   position: fixed;
   top: 0;
   left: 0;

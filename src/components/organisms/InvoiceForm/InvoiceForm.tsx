@@ -3,12 +3,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { add } from 'date-fns';
 import type { User } from 'firebase/auth';
 import { nanoid } from 'nanoid';
+import { useContext } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 
 import { Button } from '@/components/atoms/Button/Button';
 import { ErrorSpan } from '@/components/atoms/ErrorSpan/ErrorSpan';
 import LabeledInput from '@/components/molecules/LabeledInput/LabeledInput';
 import { addInvoice } from '@/helpers/firebaseHelpers';
+import { ModalContext } from '@/provider/ModalProvider';
 import type { Invoice } from '@/types/Invoice';
 import DeleteIcon from '~/svg/icon-delete.svg';
 
@@ -41,9 +43,15 @@ function InvoiceForm({ user }: InvoiceFormProps) {
   } = useForm<Invoice>({
     resolver: zodResolver(InvoiceSchema),
     mode: 'onSubmit',
+    defaultValues: {
+      createdAt: new Date(),
+    },
   });
-
-  const onSubmit = (data: Invoice) => addInvoice(data);
+  console.log(
+    '🚀 ~ file: InvoiceForm.tsx ~ line 47 ~ InvoiceForm ~ handleSubmit',
+    handleSubmit
+  );
+  const { closeModal } = useContext(ModalContext);
 
   const { fields, remove, append } = useFieldArray({
     control,
@@ -61,7 +69,21 @@ function InvoiceForm({ user }: InvoiceFormProps) {
     const translateDate = paymentDate.toLocaleDateString('en-GB');
     setValue('paymentDue', translateDate);
   }
+  const handleOnDraft = () => {
+    const data: Invoice = getValues();
+    setValue('status', 'draft');
+    addInvoice(data);
+    console.log('did the draft');
 
+    closeModal();
+  };
+  const handleOnSave = (data: Invoice) => {
+    setValue('status', 'pending');
+    addInvoice(data);
+    console.log('did the submit');
+
+    closeModal();
+  };
   if (watchItems) {
     const itemsArray = getValues('items');
 
@@ -77,11 +99,10 @@ function InvoiceForm({ user }: InvoiceFormProps) {
       ...watchItems[index],
     };
   });
-
   return (
     <>
       <FormWrapper>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(handleOnSave)}>
           <input type='hidden' {...register('id')} defaultValue={nanoid(10)} />
           <input
             type='hidden'
@@ -291,19 +312,20 @@ function InvoiceForm({ user }: InvoiceFormProps) {
             <ErrorSpan>{(errors.items as any)?.message}</ErrorSpan>
           </ItemsFieldset>
           <Controls>
-            <StyledButton type='button' variant='bordered'>
+            <StyledButton
+              type='button'
+              variant='bordered'
+              onClick={() => closeModal()}
+            >
               Discard
             </StyledButton>
-            <Button
-              variant='secondary'
-              onClick={() => {
-                clearErrors();
-              }}
-            >
+            <Button variant='secondary' onClick={() => handleOnDraft()}>
               save as draft
             </Button>
-            <Button variant='primary'>save & send</Button>
-            <input type='submit' />
+
+            <Button variant='primary' type='submit'>
+              save & send
+            </Button>
           </Controls>
         </form>
       </FormWrapper>

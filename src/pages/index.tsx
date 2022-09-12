@@ -13,6 +13,7 @@ import InvoiceModal from '@/components/organisms/Modal/Modal';
 import { getInvoices } from '@/helpers/firebaseHelpers';
 import { getInvoiceLengthMessage } from '@/helpers/getInvoiceLengthMessage';
 import { AuthContext } from '@/provider/AuthProvider';
+import { ModalContext } from '@/provider/ModalProvider';
 
 export const DashboardWrapper = styled.div`
   width: 100%;
@@ -75,10 +76,10 @@ const headerVariants: Variants = {
   },
 };
 const Index = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [invoices, setInvoices] = useState([]);
   const { user, isAuthLoading } = useContext(AuthContext);
   const router = useRouter();
+  const { openModal } = useContext(ModalContext);
 
   useEffect(() => {
     if (!user && !isAuthLoading) {
@@ -110,13 +111,10 @@ const Index = () => {
             <StyledTitle>Invoices</StyledTitle>
             <Text>{getInvoiceLengthMessage(invoices?.length)}</Text>
           </div>
-          <InvoiceModal isOpen={isOpen} setIsOpen={setIsOpen}>
+          <InvoiceModal>
             <InvoiceForm user={user} />
           </InvoiceModal>
-          <NewInvoiceButton
-            variant='primary'
-            onClick={() => setIsOpen(!isOpen)}
-          >
+          <NewInvoiceButton variant='primary' onClick={() => openModal()}>
             New Invoice
           </NewInvoiceButton>
         </Header>

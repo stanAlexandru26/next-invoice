@@ -1,20 +1,23 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import type { ReactNode } from 'react';
+import { useContext } from 'react';
 
-import { ContentWrapper, SyledDialogPanel } from './Modal.styles';
+import { ModalContext } from '@/provider/ModalProvider';
+
+import { ContentWrapper, StyledDialogPanel } from './Modal.styles';
 
 type ModalProps = {
-  isOpen: boolean;
   children: ReactNode;
-  setIsOpen: (isOpen: boolean) => void;
 };
 
-function InvoiceModal({ isOpen, children, setIsOpen }: ModalProps) {
+function InvoiceModal({ children }: ModalProps) {
+  const { closeModal, modalState } = useContext(ModalContext);
+
   return (
-    <Dialog.Root open={isOpen} onOpenChange={() => setIsOpen(false)}>
-      <SyledDialogPanel>
+    <Dialog.Root open={modalState} onOpenChange={() => closeModal()}>
+      <StyledDialogPanel>
         <ContentWrapper>{children}</ContentWrapper>
-      </SyledDialogPanel>
+      </StyledDialogPanel>
     </Dialog.Root>
   );
 }
