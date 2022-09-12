@@ -66,8 +66,9 @@ function InvoiceForm({ user }: InvoiceFormProps) {
     const date = getValues('createdAt');
     // @ts-ignore:next-line
     const paymentDate = add(date, { days: watchPaymentTerms });
-    const translateDate = paymentDate.toLocaleDateString('en-GB');
-    setValue('paymentDue', translateDate);
+
+    // const translateDate = paymentDate.toLocaleDateString('en-GB');
+    setValue('paymentDue', paymentDate);
   }
   const handleOnDraft = () => {
     const data: Invoice = getValues();
@@ -115,7 +116,12 @@ function InvoiceForm({ user }: InvoiceFormProps) {
             {...register('status')}
             defaultValue={'pending'}
           />
-          <input type='hidden' {...register('paymentDue')} defaultValue={0} />
+          <input
+            type='hidden'
+            {...register('paymentDue', {
+              valueAsDate: true,
+            })}
+          />
 
           <FromFieldset>
             <legend>Bill from</legend>

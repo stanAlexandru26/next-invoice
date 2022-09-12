@@ -23,6 +23,8 @@ export const getInvoices = async (uid: string | null) => {
   return invoiceSnapshot.docs.map((invoice) => ({
     ...invoice.data(),
     documentId: invoice.id,
+    createdAt: invoice.data().createdAt.toDate(),
+    paymentDue: invoice.data().paymentDue.toDate(),
   }));
 };
 export const getInvoice = async (uid: string) => {

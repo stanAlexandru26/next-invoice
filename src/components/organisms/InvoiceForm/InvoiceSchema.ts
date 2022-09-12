@@ -36,7 +36,7 @@ const InvoiceSchema = z.object({
   clientAddress: addressSchema,
   senderAddress: addressSchema,
   paymentTerms: z.number(),
-  paymentDue: z.string(),
+  paymentDue: z.date(),
   status: statusSchema,
   description: z.string().min(3, { message: 'Can not be empty' }),
   items: itemSchema.array().nonempty(),

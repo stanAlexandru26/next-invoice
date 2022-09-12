@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import Link from 'next/link';
 
 import type { Invoice } from '@/types/Invoice';
@@ -20,7 +21,7 @@ const InvoiceCard = ({ invoice }: InvoiceCardProps) => {
     <Link href={`/invoice/${invoice.id}`}>
       <Wrapper>
         <StyledId>{invoice.id}</StyledId>
-        <DateSpan> Due {invoice.paymentDue}</DateSpan>
+        <DateSpan>Due {format(invoice.paymentDue, 'c MMMM R')}</DateSpan>
         <ClientSpan>{invoice.clientName}</ClientSpan>
         <AmountSpan>{invoice.total}</AmountSpan>
         <StyledBadge variant={invoice.status} />

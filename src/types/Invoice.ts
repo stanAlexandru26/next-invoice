@@ -24,10 +24,10 @@ export interface Item {
 
 export interface Invoice {
   id: string;
-  createdAt: string;
+  createdAt: Date;
   createdBy?: string;
   documentId?: string;
-  paymentDue: string;
+  paymentDue: Date;
   paymentTerms: PaymentTerms;
   description: string;
   clientName: string;
