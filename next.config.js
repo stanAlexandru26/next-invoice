@@ -12,6 +12,9 @@ module.exports = withBundleAnalyzer({
   basePath: '',
   swcMinify: true,
   reactStrictMode: true,
+  experimental: {
+    swcPlugins: [['next-superjson-plugin', {}]],
+  },
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/i,

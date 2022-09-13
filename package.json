@@ -24,10 +24,12 @@
     "nanoid": "^4.0.0",
     "next": "^12.2.5",
     "next-seo": "^5.5.0",
+    "next-superjson-plugin": "^0.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.34.2",
     "styled-components": "^5.3.5",
+    "superjson": "^1.9.1",
     "zod": "^3.18.0"
   },
   "devDependencies": {

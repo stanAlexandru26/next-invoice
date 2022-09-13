@@ -1,5 +1,7 @@
+import { format, parseISO } from 'date-fns';
 import React from 'react';
 
+import { formatNumberToUSD } from '@/helpers/formatNumberToUSD';
 import type { Invoice } from '@/types/Invoice';
 
 import {
@@ -32,7 +34,7 @@ const InvoiceDetailed = ({ invoice }: InvoiceDetailedProps) => {
       <TopWrapper>
         <InfoWrapper smallGap as='hgroup'>
           <StyledId as='h1'>{invoice.id}</StyledId>
-          <Heading as='h2'>Graphic Design</Heading>
+          <Heading as='h2'>{invoice.description}</Heading>
         </InfoWrapper>
 
         <div>
@@ -47,12 +49,12 @@ const InvoiceDetailed = ({ invoice }: InvoiceDetailedProps) => {
         <DatesWrapper>
           <InfoWrapper>
             <Heading>Invoice Date</Heading>
-            <PrimaryInfo>{invoice.createdAt}</PrimaryInfo>
+            <PrimaryInfo>{format(invoice.createdAt, 'c MMMM R')}</PrimaryInfo>
           </InfoWrapper>
 
           <InfoWrapper>
             <Heading>Payment Due</Heading>
-            <PrimaryInfo>{invoice.paymentDue}</PrimaryInfo>
+            <PrimaryInfo>{format(invoice.paymentDue, 'c MMMM R')}</PrimaryInfo>
           </InfoWrapper>
         </DatesWrapper>
 
@@ -95,7 +97,7 @@ const InvoiceDetailed = ({ invoice }: InvoiceDetailedProps) => {
 
       <TotalWrapper>
         <TotalHeading>Amount Due</TotalHeading>
-        <TotalText>{invoice.total}</TotalText>
+        <TotalText>{formatNumberToUSD(invoice.total)}</TotalText>
       </TotalWrapper>
     </Wrapper>
   );

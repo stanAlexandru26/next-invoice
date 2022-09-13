@@ -29,11 +29,16 @@ export const getInvoices = async (uid: string | null) => {
 };
 export const getInvoice = async (uid: string) => {
   const docRef = doc(db, 'invoices', uid);
-  const invoiceSnapshot = await getDoc(docRef);
-  if (!invoiceSnapshot.exists) {
+  const invoice = await getDoc(docRef);
+  if (!invoice.exists()) {
     return null;
   }
-  return invoiceSnapshot.data();
+  return {
+    ...invoice.data(),
+    documentId: invoice.id,
+    createdAt: invoice.data().createdAt.toDate(),
+    paymentDue: invoice.data().paymentDue.toDate(),
+  };
 };
 
 export const addInvoice = async (data: Invoice) => {
