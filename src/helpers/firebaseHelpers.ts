@@ -55,3 +55,9 @@ export const editInvoice = async (data: any) => {
 export const deleteInvoice = async (documentId: string) => {
   await deleteDoc(doc(db, 'invoices', documentId));
 };
+export const markAsPaid = async (documentId: string) => {
+  const invoiceRef = doc(db, 'invoices', documentId);
+  await updateDoc(invoiceRef, {
+    status: 'paid',
+  });
+};

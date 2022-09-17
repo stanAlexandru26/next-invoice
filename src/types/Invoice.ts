@@ -26,7 +26,7 @@ export interface Invoice {
   id: string;
   createdAt: Date;
   createdBy?: string;
-  documentId?: string;
+  documentId: string;
   paymentDue: Date;
   paymentTerms: PaymentTerms;
   description: string;

@@ -36,7 +36,6 @@ function InvoiceForm({ user }: InvoiceFormProps) {
     handleSubmit,
     control,
     watch,
-    clearErrors,
     setValue,
     getValues,
     formState: { errors },
@@ -47,12 +46,8 @@ function InvoiceForm({ user }: InvoiceFormProps) {
       createdAt: new Date(),
     },
   });
-  console.log(
-    '🚀 ~ file: InvoiceForm.tsx ~ line 47 ~ InvoiceForm ~ handleSubmit',
-    handleSubmit
-  );
-  const { closeModal } = useContext(ModalContext);
 
+  const { closeModal } = useContext(ModalContext);
   const { fields, remove, append } = useFieldArray({
     control,
     name: 'items',
