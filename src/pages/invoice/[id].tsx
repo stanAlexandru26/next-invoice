@@ -1,10 +1,13 @@
+import { useContext } from 'react';
 import styled from 'styled-components';
 import superjson from 'superjson';
 
 import InvoiceDetailed from '@/components/organisms/InvoiceDetailed/InvoiceDetailed';
+import InvoiceForm from '@/components/organisms/InvoiceForm/InvoiceForm';
 import InvoiceStatusBar from '@/components/organisms/InvoiceStatusBar/InvoiceStatusBar';
 import InvoiceModal from '@/components/organisms/Modal/Modal';
 import { getInvoice } from '@/helpers/firebaseHelpers';
+import { AuthContext } from '@/provider/AuthProvider';
 import type { Invoice } from '@/types/Invoice';
 
 export const Wrapper = styled.div`
@@ -36,7 +39,10 @@ type SingleInvoiceProps = {
 
 function SingleInvoice({ serializedInvoice }: SingleInvoiceProps) {
   // @ts-ignore
+
   const invoice: Invoice = superjson.deserialize(serializedInvoice);
+  const { user } = useContext(AuthContext);
+
   return (
     <Wrapper>
       <>
@@ -45,6 +51,9 @@ function SingleInvoice({ serializedInvoice }: SingleInvoiceProps) {
           documentId={invoice.documentId}
         />
         <InvoiceDetailed invoice={invoice} />
+        <InvoiceModal>
+          <InvoiceForm user={user} invoice={invoice} />
+        </InvoiceModal>
       </>
     </Wrapper>
   );

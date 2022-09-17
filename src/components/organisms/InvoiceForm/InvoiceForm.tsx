@@ -1,6 +1,6 @@
 import { DevTool } from '@hookform/devtools';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { add } from 'date-fns';
+import { add, format } from 'date-fns';
 import type { User } from 'firebase/auth';
 import { nanoid } from 'nanoid';
 import { useContext } from 'react';
@@ -28,9 +28,10 @@ import InvoiceSchema from './InvoiceSchema';
 
 type InvoiceFormProps = {
   user?: User | null;
+  invoice?: Invoice | null;
 };
 
-function InvoiceForm({ user }: InvoiceFormProps) {
+function InvoiceForm({ user, invoice }: InvoiceFormProps) {
   const {
     register,
     handleSubmit,
@@ -43,7 +44,18 @@ function InvoiceForm({ user }: InvoiceFormProps) {
     resolver: zodResolver(InvoiceSchema),
     mode: 'onSubmit',
     defaultValues: {
-      createdAt: new Date(),
+      ...invoice,
+      id: invoice?.id || nanoid(10),
+      // @ts-ignore:next-line
+
+      createdAt: invoice?.createdAt
+        ? format(invoice?.createdAt, 'yyyy-MM-dd')
+        : format(Date.now(), 'yyyy-MM-dd'),
+      createdBy: invoice?.createdBy || user?.uid,
+      status: invoice?.status || 'pending',
+      paymentTerms: invoice?.paymentTerms || 1,
+      paymentDue: invoice?.paymentDue || add(new Date(), { days: 1 }),
+      total: invoice?.total || 0,
     },
   });
 
@@ -59,7 +71,6 @@ function InvoiceForm({ user }: InvoiceFormProps) {
 
   if (watchDate && watchPaymentTerms) {
     const date = getValues('createdAt');
-    // @ts-ignore:next-line
     const paymentDate = add(date, { days: watchPaymentTerms });
 
     // const translateDate = paymentDate.toLocaleDateString('en-GB');
@@ -99,18 +110,10 @@ function InvoiceForm({ user }: InvoiceFormProps) {
     <>
       <FormWrapper>
         <form onSubmit={handleSubmit(handleOnSave)}>
-          <input type='hidden' {...register('id')} defaultValue={nanoid(10)} />
-          <input
-            type='hidden'
-            {...register('createdBy')}
-            defaultValue={user?.uid}
-          />
-          <input type='hidden' {...register('total')} defaultValue={0} />
-          <input
-            type='hidden'
-            {...register('status')}
-            defaultValue={'pending'}
-          />
+          <input type='hidden' {...register('id')} />
+          <input type='hidden' {...register('createdBy')} />
+          <input type='hidden' {...register('total')} />
+          <input type='hidden' {...register('status')} />
           <input
             type='hidden'
             {...register('paymentDue', {
